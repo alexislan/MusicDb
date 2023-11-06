@@ -11,9 +11,11 @@ namespace MusicLike.Controllers
     public class UserController : ControllerBase
     {
         private readonly MusicDbContext _Db;
-        public UserController(MusicDbContext db) 
+        private readonly IEncoderService _EncoderService;
+        public UserController(MusicDbContext db, IEncoderService encoderService) 
         { 
             _Db = db;
+            _EncoderService = encoderService;
         }
         
         [HttpPost("Register")]
@@ -21,7 +23,7 @@ namespace MusicLike.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public ActionResult<UsersDto> CreateUser([FromBody] UsersDto usersDto)
+        public ActionResult<CreateUser> CreateUser([FromBody] CreateUser usersDto)
         {
             if (!ModelState.IsValid)
             {
@@ -41,6 +43,10 @@ namespace MusicLike.Controllers
             {
                 return BadRequest(usersDto);
             }
+
+            //var hashedPass = _EncoderService.Encode(usersDto.Password);
+            usersDto.Password = _EncoderService.Encode(usersDto.Password);
+
             Users Modelo = new()
             {
                 Name = usersDto.Name,
@@ -72,12 +78,14 @@ namespace MusicLike.Controllers
                 return BadRequest(ModelState);
             }
             var User = _Db.Users.FirstOrDefault(u => u.UserName.ToLower() == loginUser.UserName.ToLower());
+
             if (User == null) 
             {
                 ModelState.AddModelError("Error", "credentials incorrectas");
                 return BadRequest(ModelState);
             }
-            if (User.Password != loginUser.Password)
+            //if (User.Password != loginUser.Password)
+            if(!_EncoderService.Verify(loginUser.Password, User.Password))
             {
                 ModelState.AddModelError("Error", "credentials incorrectas");
                 return BadRequest(ModelState);

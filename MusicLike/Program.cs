@@ -12,6 +12,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+//SERVICES
+builder.Services.AddScoped<IEncoderService, EncoderService>();
+
+
+
 builder.Services.AddDbContext<MusicDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("conn"));
