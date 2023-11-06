@@ -66,10 +66,34 @@ namespace MusicLike.Controllers
             {
                 return BadRequest(ModelState);
             }
-            if (_Db.Users.FirstOrDefault(u => u.UserName.ToLower() == loginUser.UserName.ToLower()) == null)
+            if (loginUser.UserName == null)
             {
-                
+                ModelState.AddModelError("Error", "credentials incorrectas");
+                return BadRequest(ModelState);
             }
+            var User = _Db.Users.FirstOrDefault(u => u.UserName.ToLower() == loginUser.UserName.ToLower());
+            if (User == null) 
+            {
+                ModelState.AddModelError("Error", "credentials incorrectas");
+                return BadRequest(ModelState);
+            }
+            if (User.Password != loginUser.Password)
+            {
+                ModelState.AddModelError("Error", "credentials incorrectas");
+                return BadRequest(ModelState);
+            }
+            var Modelo = new UsersDto
+            {
+               Id = User.Id,
+               Name = User.UserName,
+               Email = User.Email,
+               UserName = User.UserName,
+               Password = User.Password,
+               UserTypeId = User.UserTypeId,
+               GenderId = User.GenderId,
+               CountryId = User.CountryId,
+            };
+            return Ok(Modelo);
         }
     }
 }
