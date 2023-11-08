@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MusicLike.Models.Users.Dto
 {
-    public class UsersDto
+    public class CreateResponseDto
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

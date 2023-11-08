@@ -6,6 +6,7 @@ namespace MusicLike.Models.UserType
 {
     public class UserType
     {
+        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]

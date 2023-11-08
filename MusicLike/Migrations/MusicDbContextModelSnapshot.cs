@@ -47,7 +47,7 @@ namespace MusicLike.Migrations
 
                     b.HasIndex("GenderId");
 
-                    b.ToTable("Artists");
+                    b.ToTable("Artists", (string)null);
                 });
 
             modelBuilder.Entity("MusicLike.Models.Country.Country", b =>
@@ -65,7 +65,7 @@ namespace MusicLike.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Country");
+                    b.ToTable("Country", (string)null);
 
                     b.HasData(
                         new
@@ -135,7 +135,7 @@ namespace MusicLike.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Gender");
+                    b.ToTable("Gender", (string)null);
 
                     b.HasData(
                         new
@@ -165,7 +165,7 @@ namespace MusicLike.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genres");
+                    b.ToTable("Genres", (string)null);
 
                     b.HasData(
                         new
@@ -232,7 +232,7 @@ namespace MusicLike.Migrations
 
                     b.HasIndex("ReleaseId");
 
-                    b.ToTable("GenresRelease");
+                    b.ToTable("GenresRelease", (string)null);
                 });
 
             modelBuilder.Entity("MusicLike.Models.Prueba.Prueba", b =>
@@ -252,7 +252,7 @@ namespace MusicLike.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("pruebas");
+                    b.ToTable("pruebas", (string)null);
                 });
 
             modelBuilder.Entity("MusicLike.Models.Rating.Rating", b =>
@@ -263,24 +263,40 @@ namespace MusicLike.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Ratingg")
-                        .IsRequired()
+                    b.Property<int>("Ratting")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("ReleaseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReleaseId");
+                    b.ToTable("Rating", (string)null);
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Rating");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Ratting = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Ratting = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Ratting = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Ratting = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Ratting = 5
+                        });
                 });
 
             modelBuilder.Entity("MusicLike.Models.ReleaseType.ReleaseType", b =>
@@ -298,22 +314,19 @@ namespace MusicLike.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ReleaseType");
-                });
+                    b.ToTable("ReleaseType", (string)null);
 
-            modelBuilder.Entity("MusicLike.Models.Releases.ReleaseArtist", b =>
-                {
-                    b.Property<int>("ArtistId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReleaseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ArtistId", "ReleaseId");
-
-                    b.HasIndex("ReleaseId");
-
-                    b.ToTable("ReleaseArtist");
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Live"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Studio"
+                        });
                 });
 
             modelBuilder.Entity("MusicLike.Models.Releases.Releases", b =>
@@ -324,12 +337,15 @@ namespace MusicLike.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ArtistId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("Ratings")
+                    b.Property<int>("RatingId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReleaseDate")
@@ -344,9 +360,13 @@ namespace MusicLike.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ArtistId");
+
+                    b.HasIndex("RatingId");
+
                     b.HasIndex("ReleaseTypeId");
 
-                    b.ToTable("Releases");
+                    b.ToTable("Releases", (string)null);
                 });
 
             modelBuilder.Entity("MusicLike.Models.Review.Review", b =>
@@ -378,7 +398,7 @@ namespace MusicLike.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("MusicLike.Models.UserType.UserType", b =>
@@ -396,7 +416,7 @@ namespace MusicLike.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserTypes");
+                    b.ToTable("UserTypes", (string)null);
 
                     b.HasData(
                         new
@@ -452,7 +472,7 @@ namespace MusicLike.Migrations
 
                     b.HasIndex("UserTypeId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("MusicLike.Models.Artists.Artist", b =>
@@ -489,47 +509,29 @@ namespace MusicLike.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MusicLike.Models.Rating.Rating", b =>
+            modelBuilder.Entity("MusicLike.Models.Releases.Releases", b =>
                 {
-                    b.HasOne("MusicLike.Models.Releases.Releases", "Releases")
-                        .WithMany()
-                        .HasForeignKey("ReleaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MusicLike.Models.Users.Users", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Releases");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("MusicLike.Models.Releases.ReleaseArtist", b =>
-                {
-                    b.HasOne("MusicLike.Models.Artists.Artist", null)
-                        .WithMany()
+                    b.HasOne("MusicLike.Models.Artists.Artist", "Artist")
+                        .WithMany("Releases")
                         .HasForeignKey("ArtistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MusicLike.Models.Releases.Releases", null)
+                    b.HasOne("MusicLike.Models.Rating.Rating", "Rating")
                         .WithMany()
-                        .HasForeignKey("ReleaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("RatingId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-                });
 
-            modelBuilder.Entity("MusicLike.Models.Releases.Releases", b =>
-                {
                     b.HasOne("MusicLike.Models.ReleaseType.ReleaseType", "ReleaseType")
                         .WithMany()
                         .HasForeignKey("ReleaseTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Artist");
+
+                    b.Navigation("Rating");
 
                     b.Navigation("ReleaseType");
                 });
@@ -586,6 +588,11 @@ namespace MusicLike.Migrations
                     b.Navigation("Gender");
 
                     b.Navigation("UserType");
+                });
+
+            modelBuilder.Entity("MusicLike.Models.Artists.Artist", b =>
+                {
+                    b.Navigation("Releases");
                 });
 #pragma warning restore 612, 618
         }

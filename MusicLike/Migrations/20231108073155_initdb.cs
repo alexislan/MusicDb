@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MusicLike.Migrations
 {
     /// <inheritdoc />
-    public partial class initDb : Migration
+    public partial class initdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,6 +67,19 @@ namespace MusicLike.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Rating",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Ratting = table.Column<int>(type: "int", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rating", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ReleaseType",
                 columns: table => new
                 {
@@ -120,29 +133,6 @@ namespace MusicLike.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Releases",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ReleaseDate = table.Column<DateTime>(type: "datetime2", maxLength: 50, nullable: false),
-                    Score = table.Column<int>(type: "int", nullable: false),
-                    Ratings = table.Column<int>(type: "int", nullable: false),
-                    ReleaseTypeId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Releases", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Releases_ReleaseType_ReleaseTypeId",
-                        column: x => x.ReleaseTypeId,
-                        principalTable: "ReleaseType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -180,6 +170,42 @@ namespace MusicLike.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Releases",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "datetime2", maxLength: 50, nullable: false),
+                    Score = table.Column<int>(type: "int", nullable: false),
+                    RatingId = table.Column<int>(type: "int", nullable: false),
+                    ReleaseTypeId = table.Column<int>(type: "int", nullable: false),
+                    ArtistId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Releases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Releases_Artists_ArtistId",
+                        column: x => x.ArtistId,
+                        principalTable: "Artists",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Releases_Rating_RatingId",
+                        column: x => x.RatingId,
+                        principalTable: "Rating",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Releases_ReleaseType_ReleaseTypeId",
+                        column: x => x.ReleaseTypeId,
+                        principalTable: "ReleaseType",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GenresRelease",
                 columns: table => new
                 {
@@ -199,57 +225,6 @@ namespace MusicLike.Migrations
                         name: "FK_GenresRelease_Releases_ReleaseId",
                         column: x => x.ReleaseId,
                         principalTable: "Releases",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ReleaseArtist",
-                columns: table => new
-                {
-                    ArtistId = table.Column<int>(type: "int", nullable: false),
-                    ReleaseId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReleaseArtist", x => new { x.ArtistId, x.ReleaseId });
-                    table.ForeignKey(
-                        name: "FK_ReleaseArtist_Artists_ArtistId",
-                        column: x => x.ArtistId,
-                        principalTable: "Artists",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ReleaseArtist_Releases_ReleaseId",
-                        column: x => x.ReleaseId,
-                        principalTable: "Releases",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Rating",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Ratingg = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ReleaseId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Rating", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Rating_Releases_ReleaseId",
-                        column: x => x.ReleaseId,
-                        principalTable: "Releases",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Rating_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -332,6 +307,27 @@ namespace MusicLike.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Rating",
+                columns: new[] { "Id", "Ratting" },
+                values: new object[,]
+                {
+                    { 1, 1 },
+                    { 2, 2 },
+                    { 3, 3 },
+                    { 4, 4 },
+                    { 5, 5 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ReleaseType",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Live" },
+                    { 2, "Studio" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "UserTypes",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
@@ -356,19 +352,14 @@ namespace MusicLike.Migrations
                 column: "ReleaseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rating_ReleaseId",
-                table: "Rating",
-                column: "ReleaseId");
+                name: "IX_Releases_ArtistId",
+                table: "Releases",
+                column: "ArtistId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rating_UserId",
-                table: "Rating",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ReleaseArtist_ReleaseId",
-                table: "ReleaseArtist",
-                column: "ReleaseId");
+                name: "IX_Releases_RatingId",
+                table: "Releases",
+                column: "RatingId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Releases_ReleaseTypeId",
@@ -416,19 +407,10 @@ namespace MusicLike.Migrations
                 name: "pruebas");
 
             migrationBuilder.DropTable(
-                name: "ReleaseArtist");
-
-            migrationBuilder.DropTable(
                 name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "Genres");
-
-            migrationBuilder.DropTable(
-                name: "Artists");
-
-            migrationBuilder.DropTable(
-                name: "Rating");
 
             migrationBuilder.DropTable(
                 name: "Releases");
@@ -437,16 +419,22 @@ namespace MusicLike.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
+                name: "Artists");
+
+            migrationBuilder.DropTable(
+                name: "Rating");
+
+            migrationBuilder.DropTable(
                 name: "ReleaseType");
+
+            migrationBuilder.DropTable(
+                name: "UserTypes");
 
             migrationBuilder.DropTable(
                 name: "Country");
 
             migrationBuilder.DropTable(
                 name: "Gender");
-
-            migrationBuilder.DropTable(
-                name: "UserTypes");
         }
     }
 }

@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace MusicLike.Models.Gender.Dto
+namespace MusicLike.Models.Artists.Dto
 {
-    public class GenderDto
+    public class CreateArtistResponseDto
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [Required]
-        [StringLength(30, MinimumLength = 3)]
-        public string Name { get; set; } = null!;
+        [StringLength(100)]
+        public string FullName { get; set; }
     }
 }

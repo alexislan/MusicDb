@@ -10,14 +10,7 @@ namespace MusicLike.Models.Rating
         public int Id { get; set; }
         [Required]
         [StringLength(50)]
-        public string Ratingg { get; set; }
-        [Required]
-        public int UserId { get; set; }
-        [ForeignKey("UserId")]
-        public Users.Users User { get; set; }
-        [Required]
-        public int ReleaseId { get; set; }
-        [ForeignKey("ReleaseId")]
-        public Releases.Releases Releases { get; set; }
+        public int Ratting { get; set; }
+
     }   
 }

@@ -8,10 +8,12 @@ namespace MusicLike.Models.Releases.Dto
         [MaxLength(50)]
         public string Name { get; set; } = null!;
         [Required]
-        [MaxLength(50)]
+        [Range(typeof(DateTime), "2000-01-01", "2100-12-31")]
         public DateTime ReleaseDate { get; set; }
         [Required]
         public Decimal Score { get; set; }
-        public int Ratings { get; set; }
+        public Artists.Dto.CreateArtistDto Artist { get; set; }
+        public ReleaseType.ReleaseType ReleaseType { get; set; }
+        public Rating.Rating Rating { get; set; }
     }
 }

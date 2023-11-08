@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using MusicLike.Models.Users.Dto;
 using MusicLike.Models.Users;
 using MusicLike.Services;
+using MusicLike.Models.UserType;
+using MusicLike.Repositories;
+using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MusicLike.Controllers
 {
@@ -12,10 +16,20 @@ namespace MusicLike.Controllers
     {
         private readonly MusicDbContext _Db;
         private readonly IEncoderService _EncoderService;
-        public UserController(MusicDbContext db, IEncoderService encoderService) 
+        private readonly AuthService _authService;
+        private readonly UserService _userService;
+        private readonly ICountryRepository _countryRepo;
+        private readonly IGenderRepository _genderRepo;
+        private readonly IUserTypeRepository _userTypeRepo;
+        public UserController(MusicDbContext db, IEncoderService encoderService, AuthService authService, UserService userService, ICountryRepository countryRepository, IGenderRepository genderRepository, IUserTypeRepository userTypeRepository) 
         { 
             _Db = db;
             _EncoderService = encoderService;
+            _authService = authService;
+            _userService = userService;
+            _countryRepo = countryRepository;
+            _genderRepo = genderRepository;
+            _userTypeRepo = userTypeRepository;
         }
         
         [HttpPost("Register")]
@@ -23,50 +37,49 @@ namespace MusicLike.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
 
-        public ActionResult<CreateUser> CreateUser([FromBody] CreateUser usersDto)
+        public async Task<ActionResult<CreateUser>> CreateUser([FromBody] CreateUser usersDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            if (_Db.Users.FirstOrDefault(u => u.Email.ToLower() == usersDto.Email.ToLower()) != null)
+            try
             {
-                ModelState.AddModelError("email ya existe", "El Email ingresado ya existe");
-                return BadRequest(ModelState);
+                if (_Db.Users.FirstOrDefault(u => u.Email.ToLower() == usersDto.Email.ToLower()) != null)
+                {
+                    ModelState.AddModelError("email ya existe", "El Email ingresado ya existe");
+                    return BadRequest(ModelState);
+                }
+                if (_Db.Users.FirstOrDefault(u => u.UserName.ToLower() == usersDto.UserName.ToLower()) != null)
+                {
+                    ModelState.AddModelError("UserName ya existe", "El Username ingresado ya existe");
+                    return BadRequest(ModelState);
+                }
+                if (usersDto == null)
+                {
+                    return BadRequest(usersDto);
+                }
+                var UserCreate = await _userService.Create(usersDto);
+                if (UserCreate != null)
+                {
+                    return Created("GetUser", UserCreate);
+                }
+                else
+                {
+                    return BadRequest(new { message = "Error al crear el usuario" });
+                }
             }
-            if (_Db.Users.FirstOrDefault(u => u.UserName.ToLower() == usersDto.UserName.ToLower()) != null)
+            catch (Exception ex)
             {
-                ModelState.AddModelError("UserName ya existe", "El Username ingresado ya existe");
-                return BadRequest(ModelState);
+                Console.WriteLine(ex.Message);
+                return BadRequest(new { message = "Ocurrio un error con el servidor" });
             }
-            if (usersDto == null)
-            {
-                return BadRequest(usersDto);
-            }
-
-            //var hashedPass = _EncoderService.Encode(usersDto.Password);
-            usersDto.Password = _EncoderService.Encode(usersDto.Password);
-
-            Users Modelo = new()
-            {
-                Name = usersDto.Name,
-                Email = usersDto.Email,
-                UserName = usersDto.UserName,
-                Password = usersDto.Password,
-                UserTypeId = usersDto.UserTypeId,
-                GenderId = usersDto.GenderId,
-                CountryId = usersDto.CountryId
-            };
-
-            _Db.Users.Add(Modelo);
-            _Db.SaveChanges();
-            return Created("GetUser", usersDto);
         }
         [HttpPost("Login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<LoginUser> LoginUser([FromBody] LoginUser loginUser)
+        public async Task<ActionResult<LoginUser>> LoginUser([FromBody] LoginUser loginUser)
         {
             if (!ModelState.IsValid)
             {
@@ -77,7 +90,10 @@ namespace MusicLike.Controllers
                 ModelState.AddModelError("Error", "credentials incorrectas");
                 return BadRequest(ModelState);
             }
-            var User = _Db.Users.FirstOrDefault(u => u.UserName.ToLower() == loginUser.UserName.ToLower());
+            var User = await _userService.GetByUsernameOrEmail(loginUser.UserName);
+            var Country1 = await _countryRepo.GetByIdAsync(User.CountryId);
+            var Gender1 = await _genderRepo.GetByIdAsync(User.GenderId);
+            var UserType1 = await _userTypeRepo.GetByIdAsync(User.UserTypeId);
 
             if (User == null) 
             {
@@ -96,12 +112,68 @@ namespace MusicLike.Controllers
                Name = User.UserName,
                Email = User.Email,
                UserName = User.UserName,
-               Password = User.Password,
-               UserTypeId = User.UserTypeId,
-               GenderId = User.GenderId,
-               CountryId = User.CountryId,
+               UserType = UserType1,
+               Gender = Gender1,
+               Country = Country1,
             };
-            return Ok(Modelo);
+            var Token = _authService.GenerateJwtToken(User);
+            return Ok(new LoginResponse { Token = Token, User = Modelo });
+
+        }
+        [HttpGet("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<UsersDto>> Get(int id)
+        {
+            try
+            {
+                return Ok(await _userService.GetById(id));
+            }
+            catch
+            {
+                return NotFound(new { message = $"No user with Id = {id}" });
+            }
+        }
+        [HttpPut("{id:int}")]
+        //[Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<UpdateDto>> Put(int id, [FromBody] UpdateDto updateUserDto)
+        {
+            try
+            {
+                var userUpdated = await _userService.UpdateById(id, updateUserDto);
+                return Ok(userUpdated);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                await _userService.DeleteById(id);
+                // Se puede retornar un No content (204)
+                return Ok(new
+                {
+                    message = $"User with Id = {id} was deleted"
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

@@ -12,21 +12,21 @@ namespace MusicLike.Models.Releases
         [MaxLength(50)]
         public string Name { get; set; } = null!;
         [Required]
-        [MaxLength(50)]
+        [Range(typeof(DateTime), "2000-01-01", "2100-12-31")]
         public DateTime ReleaseDate { get; set; }
         [Required]
         public int Score { get; set; }
-        public int Ratings { get; set; }
+        public int RatingId { get; set; }
+        [ForeignKey("RatingId")]
+        public Rating.Rating Rating { get; set; }
         public List<Genres.Genres> Genres { get; set;}
         [Required]
         public int ReleaseTypeId { get; set; }
         [ForeignKey("ReleaseTypeId")]
         public ReleaseType.ReleaseType ReleaseType { get; set; }
-    }
-
-    public class ReleaseArtist
-    {
+        [Required]
         public int ArtistId { get; set; }
-        public int ReleaseId { get; set; }
+        [ForeignKey("ArtistId")]
+        public Artists.Artist Artist { get; set; }
     }
 }

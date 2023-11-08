@@ -6,6 +6,6 @@ namespace MusicLike.Models.Rating.Dto
     {
         [Required]
         [StringLength(50)]
-        public string Ratingg { get; set; }
+        public string Ratting { get; set; }
     }
 }

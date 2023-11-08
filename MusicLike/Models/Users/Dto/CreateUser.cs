@@ -15,7 +15,7 @@ namespace MusicLike.Models.Users.Dto
         [MinLength(6)]
         public string Password { get; set; }
         [Required]
-        public int UserTypeId { get; set; } = 1;
+        public int UserTypeId { get; } = 1;
         [Required]
         public int CountryId { get; set; }
 

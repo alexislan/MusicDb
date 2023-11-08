@@ -6,6 +6,7 @@ using MusicLike.Models.Genres;
 using MusicLike.Models.Prueba;
 using MusicLike.Models.Rating;
 using MusicLike.Models.Releases;
+using MusicLike.Models.ReleaseType;
 using MusicLike.Models.Review;
 using MusicLike.Models.Users;
 using MusicLike.Models.UserType;
@@ -25,6 +26,7 @@ namespace MusicLike.Services
         public DbSet<Genres> Genres { get; set; }
         public DbSet<Rating> Rating { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<ReleaseType> ReleaseTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -52,10 +54,6 @@ namespace MusicLike.Services
                 .WithMany()
                 .HasForeignKey(user => user.CountryId);
 
-            modelBuilder.Entity<Artist>().HasMany(e => e.Releases).WithMany().UsingEntity<ReleaseArtist>(
-                l => l.HasOne<Releases>().WithMany().HasForeignKey(e => e.ReleaseId),
-                r => r.HasOne<Artist>().WithMany().HasForeignKey(e => e.ArtistId)
-            );
             modelBuilder.Entity<Releases>().HasMany(e => e.Genres).WithMany().UsingEntity<GenresRelease>(
                 l => l.HasOne<Genres>().WithMany().HasForeignKey(e => e.GenreId),
                 r => r.HasOne<Releases>().WithMany().HasForeignKey(e => e.ReleaseId)
@@ -63,15 +61,13 @@ namespace MusicLike.Services
             modelBuilder.Entity<Releases>()
                 .HasOne(Release => Release.ReleaseType)
                 .WithMany()
-                .HasForeignKey(Release => Release.ReleaseTypeId);
-            modelBuilder.Entity<Rating>()
-                .HasOne(Rating => Rating.User)
+                .HasForeignKey(Release => Release.ReleaseTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Releases>()
+                .HasOne(Release => Release.Rating)
                 .WithMany()
-                .HasForeignKey(Rating => Rating.UserId);
-            modelBuilder.Entity<Rating>()
-                .HasOne(Rating => Rating.Releases)
-                .WithMany()
-                .HasForeignKey(Rating => Rating.ReleaseId);
+                .HasForeignKey(Release => Release.RatingId)
+                .OnDelete(DeleteBehavior.Restrict);
             modelBuilder.Entity<Review>()
                 .HasOne(Review => Review.User)
                 .WithMany()
@@ -119,6 +115,19 @@ namespace MusicLike.Services
                 new Genres { Id = 8, Name = "R&B" },
                 new Genres { Id = 9, Name = "Reggae" },
                 new Genres { Id = 10, Name = "Metal" }
+            );
+            modelBuilder.Entity<ReleaseType>().HasData(
+                new ReleaseType { Id = 1, Name = "Live"},
+                new ReleaseType { Id = 2, Name = "Studio"}
+
+            );
+            modelBuilder.Entity<Rating>().HasData(
+
+                new Rating { Id = 1, Ratting = 1 },
+                new Rating { Id = 2, Ratting = 2 },
+                new Rating { Id = 3, Ratting = 3 },
+                new Rating { Id = 4, Ratting = 4 },
+                new Rating { Id = 5, Ratting = 5 }
             );
         }
     }
