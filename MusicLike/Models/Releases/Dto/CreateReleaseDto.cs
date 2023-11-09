@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MusicLike.Models.Releases.Dto
 {
@@ -19,6 +20,7 @@ namespace MusicLike.Models.Releases.Dto
         [Required]
         public int ArtistId { get; set; }
         [Required]
-        public List<int> GenreIds { get; set; }
+        public int GenreId { get; set; }
+
     }
 }

@@ -18,5 +18,8 @@ namespace MusicLike.Models.Releases.Dto
         public int ReleaseTypeId { get; set; }
         [Required]
         public int ArtistId { get; set; }
+        [Required]
+        public int GenreId { get; set; }
+
     }
 }

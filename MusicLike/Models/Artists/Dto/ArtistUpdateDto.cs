@@ -7,5 +7,8 @@ namespace MusicLike.Models.Artists.Dto
         [Required]
         [StringLength(100)]
         public string FullName { get; set; }
+        public int GenderId { get; set; }
+        public int CountryId { get; set; }
+
     }
 }

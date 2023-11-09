@@ -12,7 +12,7 @@ using MusicLike.Services;
 namespace MusicLike.Migrations
 {
     [DbContext(typeof(MusicDbContext))]
-    [Migration("20231108073155_initdb")]
+    [Migration("20231108212313_initdb")]
     partial class initdb
     {
         /// <inheritdoc />
@@ -223,21 +223,6 @@ namespace MusicLike.Migrations
                         });
                 });
 
-            modelBuilder.Entity("MusicLike.Models.Genres.GenresRelease", b =>
-                {
-                    b.Property<int>("GenreId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ReleaseId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GenreId", "ReleaseId");
-
-                    b.HasIndex("ReleaseId");
-
-                    b.ToTable("GenresRelease");
-                });
-
             modelBuilder.Entity("MusicLike.Models.Prueba.Prueba", b =>
                 {
                     b.Property<int>("id")
@@ -343,6 +328,9 @@ namespace MusicLike.Migrations
                     b.Property<int>("ArtistId")
                         .HasColumnType("int");
 
+                    b.Property<int>("GenreId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -352,7 +340,6 @@ namespace MusicLike.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReleaseDate")
-                        .HasMaxLength(50)
                         .HasColumnType("datetime2");
 
                     b.Property<int>("ReleaseTypeId")
@@ -364,6 +351,8 @@ namespace MusicLike.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ArtistId");
+
+                    b.HasIndex("GenreId");
 
                     b.HasIndex("RatingId");
 
@@ -497,21 +486,6 @@ namespace MusicLike.Migrations
                     b.Navigation("Gender");
                 });
 
-            modelBuilder.Entity("MusicLike.Models.Genres.GenresRelease", b =>
-                {
-                    b.HasOne("MusicLike.Models.Genres.Genres", null)
-                        .WithMany()
-                        .HasForeignKey("GenreId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MusicLike.Models.Releases.Releases", null)
-                        .WithMany()
-                        .HasForeignKey("ReleaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("MusicLike.Models.Releases.Releases", b =>
                 {
                     b.HasOne("MusicLike.Models.Artists.Artist", "Artist")
@@ -520,19 +494,27 @@ namespace MusicLike.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MusicLike.Models.Genres.Genres", "Genre")
+                        .WithMany()
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("MusicLike.Models.Rating.Rating", "Rating")
                         .WithMany()
                         .HasForeignKey("RatingId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MusicLike.Models.ReleaseType.ReleaseType", "ReleaseType")
                         .WithMany()
                         .HasForeignKey("ReleaseTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Artist");
+
+                    b.Navigation("Genre");
 
                     b.Navigation("Rating");
 
@@ -544,7 +526,7 @@ namespace MusicLike.Migrations
                     b.HasOne("MusicLike.Models.Rating.Rating", "Rating")
                         .WithMany()
                         .HasForeignKey("RatingId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("MusicLike.Models.Releases.Releases", "Release")
@@ -556,7 +538,7 @@ namespace MusicLike.Migrations
                     b.HasOne("MusicLike.Models.Users.Users", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Rating");

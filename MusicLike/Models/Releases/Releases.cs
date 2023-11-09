@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using MusicLike.Models.Review.Dto;
 
 namespace MusicLike.Models.Releases
 {
@@ -19,7 +20,6 @@ namespace MusicLike.Models.Releases
         public int RatingId { get; set; }
         [ForeignKey("RatingId")]
         public Rating.Rating Rating { get; set; }
-        public List<Genres.Genres> Genres { get; set;}
         [Required]
         public int ReleaseTypeId { get; set; }
         [ForeignKey("ReleaseTypeId")]
@@ -28,5 +28,10 @@ namespace MusicLike.Models.Releases
         public int ArtistId { get; set; }
         [ForeignKey("ArtistId")]
         public Artists.Artist Artist { get; set; }
+        [Required]
+        public int GenreId { get; set; }
+        [ForeignKey("GenreId")]
+        public Genres.Genres Genre { get; set; }
+        //public ICollection<Review.Review> Reviews { get; set; }
     }
 }

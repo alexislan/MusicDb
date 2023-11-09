@@ -15,5 +15,6 @@ namespace MusicLike.Models.Releases.Dto
         public Artists.Dto.CreateArtistDto Artist { get; set; }
         public ReleaseType.ReleaseType ReleaseType { get; set; }
         public Rating.Rating Rating { get; set; }
+        public List<Genres.Genres> Genre { get; set; }
     }
 }

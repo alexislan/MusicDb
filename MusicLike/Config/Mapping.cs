@@ -13,6 +13,10 @@ using MusicLike.Models.Releases.Dto;
 using MusicLike.Models.Releases;
 using MusicLike.Models.Genres.GenresDto;
 using MusicLike.Models.Genres;
+using MusicLike.Models.Rating.Dto;
+using MusicLike.Models.Rating;
+using MusicLike.Models.Review.Dto;
+using MusicLike.Models.Review;
 
 namespace MusicLike.Config
 {
@@ -34,7 +38,7 @@ namespace MusicLike.Config
             CreateMap<CountryDto, Country>().ReverseMap();
             CreateMap<UpdateDto, Users>().ReverseMap();
             CreateMap<CreateArtistDto, Artist>().ReverseMap();
-            CreateMap<Artist, ArtistDto>().ReverseMap();
+            CreateMap<Artist, ArtistDto>().ForMember(dest => dest.Releases, opt => opt.Ignore());
             CreateMap<Artist, CreateArtistResponseDto>().ReverseMap();
             CreateMap<CreateArtistResponseDto, Artist>().ReverseMap();
             CreateMap<ArtistUpdateDto, Artist>().ReverseMap();
@@ -43,7 +47,17 @@ namespace MusicLike.Config
             CreateMap<GenresDto, Genres>().ReverseMap();
             CreateMap<ReleaseUpdateDto, Releases>().ReverseMap();
             CreateMap<ReleaseUpdateDto, ReleasesDto>().ReverseMap();
-            //CreateMap<CreateReleaseDto, Releases>().ForMember(dest => dest.Genres, opt => opt.MapFrom(src => src.Genres));
+            CreateMap<Releases, ReleasesDto>().ReverseMap();
+            CreateMap<Releases, ReleasesDto>().ForMember(dest => dest.Genre, opt => opt.MapFrom(src => new List<Genres> { src.Genre }));
+            CreateMap<Releases, ReleaseGetDto>().ReverseMap();
+            CreateMap<Rating, RatingDto>().ReverseMap();
+            CreateMap<Artist, ArtistDto2>();
+            CreateMap<ReleaseGetDto, ArtistDto2>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Artist.Id))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.Artist.FullName));
+            CreateMap<CreateReviewDto, Review>().ReverseMap();
+            CreateMap<Review, ReviewResponseDto>().ReverseMap();
+            CreateMap<Review, ReviewDto>().ReverseMap();
 
         }
     }

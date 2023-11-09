@@ -15,12 +15,6 @@ namespace MusicLike.Models.Users.Dto
         public string? Email { get; set; }
         [Required]
         public string UserName { get; set; }
-        [Required]
-        public UserType.UserType UserType { get; set; }
-        [Required]
-        public Gender.Gender Gender { get; set; }
-        [Required]
-        public Country.Country Country { get; set; }
 
     }
 }

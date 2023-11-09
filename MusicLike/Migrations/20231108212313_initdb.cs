@@ -176,11 +176,12 @@ namespace MusicLike.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ReleaseDate = table.Column<DateTime>(type: "datetime2", maxLength: 50, nullable: false),
+                    ReleaseDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Score = table.Column<int>(type: "int", nullable: false),
                     RatingId = table.Column<int>(type: "int", nullable: false),
                     ReleaseTypeId = table.Column<int>(type: "int", nullable: false),
-                    ArtistId = table.Column<int>(type: "int", nullable: false)
+                    ArtistId = table.Column<int>(type: "int", nullable: false),
+                    GenreId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -192,39 +193,21 @@ namespace MusicLike.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Releases_Rating_RatingId",
-                        column: x => x.RatingId,
-                        principalTable: "Rating",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Releases_ReleaseType_ReleaseTypeId",
-                        column: x => x.ReleaseTypeId,
-                        principalTable: "ReleaseType",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GenresRelease",
-                columns: table => new
-                {
-                    GenreId = table.Column<int>(type: "int", nullable: false),
-                    ReleaseId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GenresRelease", x => new { x.GenreId, x.ReleaseId });
-                    table.ForeignKey(
-                        name: "FK_GenresRelease_Genres_GenreId",
+                        name: "FK_Releases_Genres_GenreId",
                         column: x => x.GenreId,
                         principalTable: "Genres",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GenresRelease_Releases_ReleaseId",
-                        column: x => x.ReleaseId,
-                        principalTable: "Releases",
+                        name: "FK_Releases_Rating_RatingId",
+                        column: x => x.RatingId,
+                        principalTable: "Rating",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Releases_ReleaseType_ReleaseTypeId",
+                        column: x => x.ReleaseTypeId,
+                        principalTable: "ReleaseType",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -248,7 +231,7 @@ namespace MusicLike.Migrations
                         column: x => x.RatingId,
                         principalTable: "Rating",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Reviews_Releases_ReleaseId",
                         column: x => x.ReleaseId,
@@ -260,7 +243,7 @@ namespace MusicLike.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -347,14 +330,14 @@ namespace MusicLike.Migrations
                 column: "GenderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GenresRelease_ReleaseId",
-                table: "GenresRelease",
-                column: "ReleaseId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Releases_ArtistId",
                 table: "Releases",
                 column: "ArtistId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Releases_GenreId",
+                table: "Releases",
+                column: "GenreId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Releases_RatingId",
@@ -401,16 +384,10 @@ namespace MusicLike.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "GenresRelease");
-
-            migrationBuilder.DropTable(
                 name: "pruebas");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
-
-            migrationBuilder.DropTable(
-                name: "Genres");
 
             migrationBuilder.DropTable(
                 name: "Releases");
@@ -420,6 +397,9 @@ namespace MusicLike.Migrations
 
             migrationBuilder.DropTable(
                 name: "Artists");
+
+            migrationBuilder.DropTable(
+                name: "Genres");
 
             migrationBuilder.DropTable(
                 name: "Rating");

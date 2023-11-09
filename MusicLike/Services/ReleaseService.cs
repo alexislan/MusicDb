@@ -7,6 +7,7 @@ using System.Web.Http;
 using MusicLike.Models.Releases.Dto;
 using MusicLike.Models.Releases;
 using MusicLike.Models.Rating;
+using MusicLike.Models.Genres;
 
 namespace MusicLike.Services
 {
@@ -17,17 +18,19 @@ namespace MusicLike.Services
         private readonly IRatingRepository _ratingRepository;
         private readonly IArtistRepository _artistRepository;
         private readonly IReleaseTypeRepo _releaseTypeRepo;
+        private readonly IGenresRepository _genreRepository;
 
 
-        public ReleaseService(IReleasesRepository userRepo, IMapper mapper, IRatingRepository ratingRepository, IArtistRepository artistRepository, IReleaseTypeRepo releaseTypeRepo)
+        public ReleaseService(IReleasesRepository userRepo, IMapper mapper, IRatingRepository ratingRepository, IArtistRepository artistRepository, IReleaseTypeRepo releaseTypeRepo, IGenresRepository genreRepository)
         {
             _userRepo = userRepo;
             _mapper = mapper;
             _ratingRepository = ratingRepository;
             _artistRepository = artistRepository;
             _releaseTypeRepo = releaseTypeRepo;
+            _genreRepository = genreRepository;
         }
-        private async Task<ReleasesDto> GetOneByIdOrException(int id)
+        private async Task<Releases> GetOneByIdOrException(int id)
         {
             var release = await _userRepo.GetOne(r => r.Id == id);
 
@@ -35,71 +38,58 @@ namespace MusicLike.Services
             {
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
-            var rating = await _ratingRepository.GetRatingById(release.RatingId);
-            var artist = await _artistRepository.GetOne(r => r.Id == release.ArtistId);
-            //var releaseType = await _releaseTypeRepo.GetReleaseTypeByIdAsync(release.ReleaseTypeId);
-            var art = new CreateArtistDto
-            {
-                FullName = artist.FullName,
-                GenderId = artist.GenderId,
-                CountryId = artist.CountryId,
-            };
-            var releaseDto = new ReleasesDto
-            {
-                Name = release.Name,
-                ReleaseDate = release.ReleaseDate,
-                Score = release.Score,
-                Artist = art,
-                ReleaseType = release.ReleaseType,
-                Rating = rating,
-            };
-
-            return releaseDto;
+            return release;
         }
-        public async Task<CreateReleaseDto> Create(CreateReleaseDto createReleaseDto)
+        public async Task<CreateReleaseDto> Create(CreateReleaseDto release)
         {
-            var release = _mapper.Map<Releases>(createReleaseDto);
+            var releases = _mapper.Map<Releases>(release);
 
-            await _userRepo.Add(release);
-
-            return _mapper.Map<CreateReleaseDto>(release);
+            await _userRepo.Add(releases);
+            return _mapper.Map<CreateReleaseDto>(releases);
         }
         public async Task<ReleaseUpdateDto> UpdateById(int id, ReleaseUpdateDto updateReleaseDto)
         {
             var release = await GetOneByIdOrException(id);
 
-            var updated = _mapper.Map(updateReleaseDto, release);
-            var up = new Releases
-            {
-                Name = updateReleaseDto.Name,
-                ReleaseDate = updateReleaseDto.ReleaseDate,
-                Score = updateReleaseDto.Score,
-                ArtistId = updateReleaseDto.ArtistId,
-                ReleaseTypeId = updateReleaseDto.ReleaseTypeId,
-                RatingId = updateReleaseDto.RatingId,
-            };
+            release.Name = updateReleaseDto.Name;
+            release.ReleaseDate = updateReleaseDto.ReleaseDate;
+            release.Score = updateReleaseDto.Score;
+            release.ArtistId = updateReleaseDto.ArtistId;
+            release.ReleaseTypeId = updateReleaseDto.ReleaseTypeId;
+            release.RatingId = updateReleaseDto.RatingId;
+            release.GenreId = updateReleaseDto.GenreId;
 
-            return _mapper.Map<ReleaseUpdateDto>(await _userRepo.Update(up));
+            await _userRepo.Update(release);
+
+            return _mapper.Map<ReleaseUpdateDto>(release);
         }
         public async Task<ReleasesDto> GetById(int id)
         {
             var release = await GetOneByIdOrException(id);
 
+            if (release != null)
+            {
+                release.Rating = await _ratingRepository.GetRatingById(release.RatingId);
+                release.Artist = await _artistRepository.GetOne(r => r.Id == release.ArtistId);
+                release.ReleaseType = await _releaseTypeRepo.GetReleaseTypeByIdAsync(release.ReleaseTypeId);
+                release.Genre = await _genreRepository.GetByIdAsync(release.GenreId);
+            }
+
             var mapped = _mapper.Map<ReleasesDto>(release);
 
             return mapped;
         }
-        //public async Task DeleteById(int id)
-        //{
-        //    var user = await GetOneByIdOrException(id);
+        public async Task DeleteById(int id)
+        {
+            var user = await GetOneByIdOrException(id);
 
-        //    await _userRepo.Delete(user);
-        //}
-        //public async Task<List<ArtistDto>> GetAllWithRelatedData()
-        //{
-        //    var users = await _userRepo.GetAllWithRelatedData();
+            await _userRepo.Delete(user);
+        }
+        public async Task<List<ReleaseGetDto>> GetAllWithRelatedData()
+        {
+            var users = await _userRepo.GetAllWithRelatedData();
 
-        //    return _mapper.Map<List<ArtistDto>>(users);
-        //}
+            return _mapper.Map<List<ReleaseGetDto>>(users);
+        }
     }
-    }
+}

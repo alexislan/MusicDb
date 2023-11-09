@@ -13,22 +13,13 @@ namespace MusicLike.Controllers
     public class ArtistController : ControllerBase
     {
        
-        private readonly MusicDbContext _Db;
-        private readonly IEncoderService _EncoderService;
-        private readonly AuthService _authService;
+
         private readonly ArtistService _userService;
-        private readonly ICountryRepository _countryRepo;
-        private readonly IGenderRepository _genderRepo;
-        private readonly IUserTypeRepository _userTypeRepo;
-        public ArtistController(MusicDbContext db, IEncoderService encoderService, AuthService authService, ArtistService userService, ICountryRepository countryRepository, IGenderRepository genderRepository, IUserTypeRepository userTypeRepository)
+
+        public ArtistController(ArtistService userService)
         {
-            _Db = db;
-            _EncoderService = encoderService;
-            _authService = authService;
             _userService = userService;
-            _countryRepo = countryRepository;
-            _genderRepo = genderRepository;
-            _userTypeRepo = userTypeRepository;
+
         }
         [HttpPost("CreateArtist")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -62,13 +53,14 @@ namespace MusicLike.Controllers
             {
                 return Ok(await _userService.GetById(id));
             }
-            catch
+            catch(Exception ex)
             {
-                return NotFound(new { message = $"No user with Id = {id}" });
+                Console.WriteLine(ex.Message);
+                return NotFound(new { message = $"No Artist with Id = {id}" });
             }
         }
         [HttpPut("{id:int}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -86,7 +78,7 @@ namespace MusicLike.Controllers
             }
         }
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -96,7 +88,6 @@ namespace MusicLike.Controllers
             try
             {
                 await _userService.DeleteById(id);
-                // Se puede retornar un No content (204)
                 return Ok(new
                 {
                     message = $"User with Id = {id} was deleted"

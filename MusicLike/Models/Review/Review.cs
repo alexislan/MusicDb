@@ -23,6 +23,5 @@ namespace MusicLike.Models.Review
         public int RatingId { get; set; }
         [ForeignKey("RatingId")]
         public Rating.Rating Rating { get; set; }
-
     }
 }

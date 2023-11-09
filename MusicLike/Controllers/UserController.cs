@@ -136,7 +136,7 @@ namespace MusicLike.Controllers
             }
         }
         [HttpPut("{id:int}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -174,6 +174,18 @@ namespace MusicLike.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet("GetUsers")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<UsersDto>> GetUsers()
+        {
+            var users = await _userService.GetAllWithRelatedData();
+
+            if (users == null || users.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(users);
         }
     }
 }

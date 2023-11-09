@@ -23,17 +23,17 @@ namespace MusicLike.Repositories
 
         public async Task<IEnumerable<ReleaseType>> GetAllReleaseTypesAsync()
         {
-            return await _db.ReleaseTypes.ToListAsync();
+            return await _db.ReleaseType.ToListAsync();
         }
 
         public async Task<ReleaseType> GetReleaseTypeByIdAsync(int id)
         {
-            return await _db.ReleaseTypes.FindAsync(id);
+            return await _db.ReleaseType.FindAsync(id);
         }
 
         public async Task AddReleaseTypeAsync(ReleaseType releaseType)
         {
-            _db.ReleaseTypes.Add(releaseType);
+            _db.ReleaseType.Add(releaseType);
             await _db.SaveChangesAsync();
         }
 
@@ -45,10 +45,10 @@ namespace MusicLike.Repositories
 
         public async Task DeleteReleaseTypeAsync(int id)
         {
-            var releaseType = await _db.ReleaseTypes.FindAsync(id);
+            var releaseType = await _db.ReleaseType.FindAsync(id);
             if (releaseType != null)
             {
-                _db.ReleaseTypes.Remove(releaseType);
+                _db.ReleaseType.Remove(releaseType);
                 await _db.SaveChangesAsync();
             }
         }

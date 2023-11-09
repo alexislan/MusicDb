@@ -55,6 +55,10 @@ builder.Services.AddScoped<ReleaseService, ReleaseService>();
 builder.Services.AddScoped<RatingRepository, RatingRepository>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IReleaseTypeRepo, ReleaseTypeRepo>();
+builder.Services.AddScoped<IGenresRepository, GenresRepository>();
+builder.Services.AddScoped<ReviewService, ReviewService>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+
 
 
 

@@ -26,7 +26,8 @@ namespace MusicLike.Services
         public DbSet<Genres> Genres { get; set; }
         public DbSet<Rating> Rating { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        public DbSet<ReleaseType> ReleaseTypes { get; set; }
+        public DbSet<ReleaseType> ReleaseType { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,31 +54,26 @@ namespace MusicLike.Services
                 .HasOne(user => user.Country)
                 .WithMany()
                 .HasForeignKey(user => user.CountryId);
-
-            modelBuilder.Entity<Releases>().HasMany(e => e.Genres).WithMany().UsingEntity<GenresRelease>(
-                l => l.HasOne<Genres>().WithMany().HasForeignKey(e => e.GenreId),
-                r => r.HasOne<Releases>().WithMany().HasForeignKey(e => e.ReleaseId)
-            );
+            modelBuilder.Entity<Releases>()
+                .HasOne(Release => Release.Genre)
+                .WithMany()
+                .HasForeignKey(Release => Release.GenreId);
             modelBuilder.Entity<Releases>()
                 .HasOne(Release => Release.ReleaseType)
                 .WithMany()
-                .HasForeignKey(Release => Release.ReleaseTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(Release => Release.ReleaseTypeId);
             modelBuilder.Entity<Releases>()
                 .HasOne(Release => Release.Rating)
                 .WithMany()
-                .HasForeignKey(Release => Release.RatingId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(Release => Release.RatingId);
             modelBuilder.Entity<Review>()
                 .HasOne(Review => Review.User)
                 .WithMany()
-                .HasForeignKey(Review => Review.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(Review => Review.UserId);
             modelBuilder.Entity<Review>()
                 .HasOne(Review => Review.Rating)
                 .WithMany()
-                .HasForeignKey(Review => Review.RatingId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasForeignKey(Review => Review.RatingId);
             modelBuilder.Entity<Review>()
                 .HasOne(Review => Review.Release)
                 .WithMany()

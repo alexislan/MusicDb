@@ -1,6 +1,7 @@
 ﻿using MusicLike.Models.Artists.Dto;
 using MusicLike.Models.Genres.GenresDto;
 using MusicLike.Models.Rating.Dto;
+using MusicLike.Models.Review.Dto;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,6 +24,6 @@ namespace MusicLike.Models.Releases.Dto
         public ArtistDto Artist { get; set; }
         public GenresDto Genre { get; set; }
         public RatingDto Rating { get; set; }
-
+        //public ICollection<Review.Review> Reviews { get; set; }
     }
 }

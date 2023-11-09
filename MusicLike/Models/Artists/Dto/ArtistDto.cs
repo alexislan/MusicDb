@@ -15,6 +15,6 @@ namespace MusicLike.Models.Artists.Dto
         public Gender.Gender Gender { get; set; }
         [ForeignKey("CountryId")]
         public Country.Country Country { get; set; }
-        public List<Releases.Releases> Releases { get; set; } = null!;
+        public List<Releases.Dto.ReleaseGetDto>? Releases { get; set; }
     }
 }
