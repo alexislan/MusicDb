@@ -53,11 +53,10 @@ namespace MusicLike.Services
 
             release.Name = updateReleaseDto.Name;
             release.ReleaseDate = updateReleaseDto.ReleaseDate;
-            release.Score = updateReleaseDto.Score;
             release.ArtistId = updateReleaseDto.ArtistId;
             release.ReleaseTypeId = updateReleaseDto.ReleaseTypeId;
-            release.RatingId = updateReleaseDto.RatingId;
             release.GenreId = updateReleaseDto.GenreId;
+            release.UrlImage = updateReleaseDto.UrlImage;
 
             await _userRepo.Update(release);
 
@@ -69,7 +68,6 @@ namespace MusicLike.Services
 
             if (release != null)
             {
-                release.Rating = await _ratingRepository.GetRatingById(release.RatingId);
                 release.Artist = await _artistRepository.GetOne(r => r.Id == release.ArtistId);
                 release.ReleaseType = await _releaseTypeRepo.GetReleaseTypeByIdAsync(release.ReleaseTypeId);
                 release.Genre = await _genreRepository.GetByIdAsync(release.GenreId);

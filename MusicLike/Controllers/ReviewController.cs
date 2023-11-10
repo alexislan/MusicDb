@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MusicLike.Models.Genres.GenresDto;
 using MusicLike.Models.Releases.Dto;
 using MusicLike.Models.Review.Dto;
 using MusicLike.Models.Users.Dto;
@@ -15,12 +16,13 @@ namespace MusicLike.Controllers
     {
 
         private readonly ReviewService _userService;
+        private readonly MusicDbContext _Db;
 
-        public ReviewController( ReviewService userService)
+        public ReviewController( ReviewService userService, MusicDbContext db)
         {
 
             _userService = userService;
-
+            _Db = db;
         }
 
 
@@ -100,6 +102,12 @@ namespace MusicLike.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet("GetReview")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<IEnumerable<ReviewResponseDto>> GetReviews()
+        {
+            return Ok(_Db.Reviews.ToList());
         }
     }
 }

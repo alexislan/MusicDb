@@ -32,8 +32,6 @@ namespace MusicLike.Repositories
                 .Include(u => u.ReleaseType)
                 .Include(u => u.Artist)
                 .Include(u => u.Genre)
-                .Include(u => u.Rating)
-                //.Include(r => r.Reviews)
                 .ToListAsync();
 
             // Realiza el mapeo de las entidades Releases a ReleaseGetDto
@@ -49,8 +47,8 @@ namespace MusicLike.Repositories
                 Id = release.Id,
                 Name = release.Name,
                 ReleaseDate = release.ReleaseDate,
-                Score = release.Score,
-                RatingId = release.RatingId,
+                UrlImage = release.UrlImage,
+                Description = release.Description,
             }).ToList();
             return result;
         }

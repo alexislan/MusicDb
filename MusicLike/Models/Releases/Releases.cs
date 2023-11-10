@@ -15,11 +15,9 @@ namespace MusicLike.Models.Releases
         [Required]
         [Range(typeof(DateTime), "2000-01-01", "2100-12-31")]
         public DateTime ReleaseDate { get; set; }
-        [Required]
-        public int Score { get; set; }
-        public int RatingId { get; set; }
-        [ForeignKey("RatingId")]
-        public Rating.Rating Rating { get; set; }
+        public string UrlImage { get; set; }
+
+        public string Description { get; set; }
         [Required]
         public int ReleaseTypeId { get; set; }
         [ForeignKey("ReleaseTypeId")]
@@ -32,6 +30,5 @@ namespace MusicLike.Models.Releases
         public int GenreId { get; set; }
         [ForeignKey("GenreId")]
         public Genres.Genres Genre { get; set; }
-        //public ICollection<Review.Review> Reviews { get; set; }
     }
 }

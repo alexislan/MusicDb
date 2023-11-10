@@ -18,12 +18,9 @@ namespace MusicLike.Models.Releases.Dto
         [Required]
         [Range(typeof(DateTime), "2000-01-01", "2100-12-31")]
         public DateTime ReleaseDate { get; set; }
-        [Required]
-        public int Score { get; set; }
-        public int RatingId { get; set; }
+        public string UrlImage { get; set; }
+        public string Description { get; set; }
         public ArtistDto Artist { get; set; }
         public GenresDto Genre { get; set; }
-        public RatingDto Rating { get; set; }
-        //public ICollection<Review.Review> Reviews { get; set; }
     }
 }

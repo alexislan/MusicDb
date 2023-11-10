@@ -3,6 +3,7 @@ using MusicLike.Models.Review;
 using AutoMapper;
 using MusicLike.Services;
 using Microsoft.EntityFrameworkCore;
+using MusicLike.Models.Users;
 
 namespace MusicLike.Repositories
 {
@@ -21,22 +22,6 @@ namespace MusicLike.Repositories
             _db = db;
             _mapper = mapper;
         }
-
-
-
-        //public async Task<List<ReviewDto>> GetAllByUserId(int userId)
-        //{
-        //    var lista = await GetAll(r => r.UserId == userId);
-        //    var result = lista.Select(review => new ReviewDto
-        //    {
-        //        Id = review.Id,
-        //        Text = review.Text,
-        //        // Mapea otras propiedades según tu necesidad
-        //    }).ToList();
-
-        //    return result;
-        //}
-
         public async Task<Review> Update(Review entity)
         {
             _db.Reviews.Update(entity);

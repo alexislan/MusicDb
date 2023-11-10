@@ -75,11 +75,5 @@ namespace MusicLike.Services
 
             await _userRepo.Delete(user);
         }
-        //public async Task<List<ReleaseGetDto>> GetAllWithRelatedData()
-        //{
-        //    var users = await _userRepo.GetAllWithRelatedData();
-
-        //    return _mapper.Map<List<ReleaseGetDto>>(users);
-        //}
     }
 }
