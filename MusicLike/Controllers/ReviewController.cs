@@ -30,8 +30,8 @@ namespace MusicLike.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-
-        public async Task<ActionResult<CreateReviewDto>> CreateReview([FromBody] CreateReviewDto usersDto)
+        [Authorize]
+        public async Task<ActionResult<CreateReviewDto>> CreateReview([FromBody] CreateReviewDto reviewDto)
         {
             if (!ModelState.IsValid)
             {
@@ -39,7 +39,13 @@ namespace MusicLike.Controllers
             }
             try
             {
-                var ReleaseCreate = await _userService.Create(usersDto);
+                var userIdClaim = User.FindFirst("id");
+                if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+                {
+                    return BadRequest(new { message = "Error al extraer el ID del usuario del token." });
+                }
+                reviewDto.UserId = userId;
+                var ReleaseCreate = await _userService.Create(reviewDto);
                 return Created("GetUser", ReleaseCreate);
             }
             catch (Exception ex)
